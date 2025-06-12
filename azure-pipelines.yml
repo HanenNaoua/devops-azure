@@ -72,21 +72,21 @@ steps:
   displayName: 'Run SonarCloud Analysis'
 
 # 8 Publier le rapport SonarCloud
-- task: SonarCloudPublish@3
-  inputs:
-    pollingTimeoutSec: '300'
-  displayName: 'Publier le rapport SonarCloud'
+#- task: SonarCloudPublish@3
+  #inputs:
+   # pollingTimeoutSec: '300'
+  #displayName: 'Publier le rapport SonarCloud'
 
 # 9 Connexion à Docker Hub pour tester la connexion
 - script: |
     echo $(DOCKER_PASSWORD) | docker login -u $(DOCKER_USERNAME) --password-stdin
   displayName: 'Docker login CLI'
   
-- script: |
-    echo "Cleaning NPM cache and Docker cache..."
-    npm cache clean --force
-    docker builder prune -f
-  displayName: 'Clean NPM and Docker cache'
+#- script: |
+ #   echo "Cleaning NPM cache and Docker cache..."
+  #  npm cache clean --force
+   # docker builder prune -f
+  #displayName: 'Clean NPM and Docker cache'
 
 # 10 Build & Push de l'image Docker vers Docker Hub
 - task: Docker@2
