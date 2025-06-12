@@ -1,0 +1,115 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- main
+
+pool:
+  name: Default
+
+steps:
+# 1 Checkout du code
+- checkout: self
+  clean: true
+  persistCredentials: true
+  
+# 2 Vérifier l'existence de package.json
+- script: |
+    IF NOT EXIST "$(Build.SourcesDirectory)\angular-app-kubernetes\package.json" (
+      echo Erreur : package.json introuvable !
+      EXIT /B 1
+    )
+  displayName: "Vérifier l'existence de package.json"
+
+# 3 Installer Node.js 20
+- task: UseNode@1
+  inputs:
+    version: '20.x'
+  displayName: 'Installer Node.js 20'
+  
+  # Étape 4 : Installer Angular CLI et les dépendances du projet (Windows compatible)
+- script: |
+    echo "Installation de Angular CLI et des dépendances"
+    set NODE_OPTIONS=--openssl-legacy-provider  # Fix pour OpenSSL
+    cd $(Build.SourcesDirectory)\angular-app-kubernetes
+    IF EXIST node_modules (rmdir /S /Q node_modules)
+    IF EXIST package-lock.json (del /F /Q package-lock.json)
+    call npm install -g @angular/cli@16 rxjs@7.8.0 --legacy-peer-deps --save
+    call npm install || exit /b 1
+    dir node_modules
+    call npm install --save-dev @angular-devkit/build-angular
+    call ng version
+  displayName: 'Install Angular CLI and dependencies'
+  workingDirectory: $(Build.SourcesDirectory)
+  
+# Étape 6 : Build du projet Angular (compatible Windows agent)
+- script: |
+    echo "Build du frontend en mode production"
+    cd $(Build.SourcesDirectory)\angular-app-kubernetes
+    call ng build --configuration production
+  displayName: 'Build Angular Project'
+  workingDirectory: $(Build.SourcesDirectory)
+  
+# 5 Préparer l’analyse SonarCloud
+- task: SonarCloudPrepare@3
+  inputs:
+    SonarCloud: 'SonarCloudServiceConnection'
+    organization: 'hanennaoua'
+    projectKey: 'HanenNaoua_projet-devops-azure'
+    projectName: 'DEVOPS-AZURE'
+    scannerMode: 'CLI'
+    extraProperties: |
+      sonar.projectKey=HanenNaoua_projet-devops-azure
+      sonar.organization=hanennaoua
+      sonar.host.url=https://sonarcloud.io
+      sonar.sources= .
+
+
+# 7 Exécuter l'analyse SonarCloud
+- task: SonarCloudAnalyze@3
+  displayName: 'Run SonarCloud Analysis'
+
+# 8 Publier le rapport SonarCloud
+#- task: SonarCloudPublish@3
+  #inputs:
+   # pollingTimeoutSec: '300'
+  #displayName: 'Publier le rapport SonarCloud'
+
+# 9 Connexion à Docker Hub pour tester la connexion
+- script: |
+    echo $(DOCKER_PASSWORD) | docker login -u $(DOCKER_USERNAME) --password-stdin
+  displayName: 'Docker login CLI'
+  
+#- script: |
+ #   echo "Cleaning NPM cache and Docker cache..."
+  #  npm cache clean --force
+   # docker builder prune -f
+  #displayName: 'Clean NPM and Docker cache'
+
+# 10 Build & Push de l'image Docker vers Docker Hub
+- task: Docker@2
+  inputs:
+    command: 'buildAndPush' # Commande pour construire et pousser l'image
+    containerRegistry: 'DockerHub' # Connexion Docker Hub
+    repository: 'hanen90/devops-azure' # Dépôt Docker Hub
+    Dockerfile: 'angular-app-kubernetes/Dockerfile' # Dockerfile situé à la racine
+    buildContext: 'angular-app-kubernetes'
+    tags: 'latest' # Tag de l'image
+  displayName: 'Build and Push Docker Image to Docker Hub'
+
+# 11 Vérification du contenu du dossier dist pour publication
+- script: |
+    echo "📂Vérification du contenu du dossier dist après build"
+    ls -l dist/angular-app # Vérifier le contenu du dossier angular-app après build
+  displayName: 'Verify dist folder content'
+
+#  12 Publier l'artefact de build
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'
+    publishLocation: 'Container'
+  displayName: 'Publish Build Artifact'
+
