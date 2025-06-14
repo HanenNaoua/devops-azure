@@ -14,7 +14,8 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 #Vérifier la version Angular CLI,
-RUN npx ng version (echo "❌ Angular CLI non trouvé !" && exit 1)
+#RUN npx ng version (echo "❌ Angular CLI non trouvé !" && exit 1)
+RUN npx ng version || { echo "❌ Angular CLI non trouvé !" && exit 1; }
 
 #Lancer le build Angular,
 RUN npm run build -- --configuration=production --deleteOutputPath=false (echo "❌Build Angular failed!" && exit 1)
