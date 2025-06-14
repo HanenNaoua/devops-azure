@@ -1,0 +1,80 @@
+trigger:
+- main
+
+pool:
+  name: default  # Vérifie que ce pool contient un agent compatible avec Java, Docker et SonarCloud
+
+steps:
+
+# 1️⃣ Checkout du code
+- checkout: self
+  clean: true
+  persistCredentials: true
+
+# 2️⃣ Vérifier l'existence de package.json
+- script: |
+    if [ ! -f "$(Build.SourcesDirectory)/angular-app-kubernetes/package.json" ]; then
+      echo "❌ Erreur: package.json introuvable !"
+      exit 1
+    fi
+  displayName: "Vérifier l'existence de package.json"
+
+# 3️⃣ Installer Node.js 20
+- task: UseNode@1
+  inputs:
+    version: '20.x'
+  displayName: 'Use Node.js 20'
+
+# 4️⃣ Installer Angular CLI et les dépendances
+- script: |
+    echo "📦 Installation de Angular CLI et des dépendances"
+    cd $(Build.SourcesDirectory)/angular-app-kubernetes
+    npm install -g @angular/cli@16
+    npm install
+    ng version
+  displayName: 'Install Angular CLI and dependencies'
+
+# 5️⃣ 🔍 **Préparer l'analyse SonarCloud**
+
+# 5️⃣ 🚀 Build du projet Angular
+- script: |
+    echo "🚀 Build du projet Angular"
+    cd $(Build.SourcesDirectory)/angular-app-kubernetes
+    npm run build -- --configuration=production
+  displayName: 'Build Angular Project'
+
+# 5️⃣ 🔍 Exécuter l'analyse SonarCloud
+
+# 6️⃣ 📢 Publier le rapport SonarCloud
+
+
+# 6️⃣ 🔐 Connexion à Docker Hub
+- task: Docker@2
+  inputs:
+    command: 'login'
+    containerRegistry: 'DockerHub-Connection'  # Vérifie que ce nom est exactement celui configuré dans Azure DevOps
+  displayName: 'Login to Docker Hub'
+
+# 6️⃣ 🐳 Build & Push Docker Image to Docker Hub
+- task: Docker@2
+  inputs:
+    command: 'buildAndPush'
+    containerRegistry: 'DockerHub'  # le même que juste avant
+    repository: 'hanen90/devops-azure'  # DockerHub username/repository
+    tags: 'latest'
+    Dockerfile: 'angular-app-kubernetes/Dockerfile'
+  displayName: 'Build and Push Docker Image to Docker Hub'
+
+# 7️⃣ 📂 Vérification du contenu du dossier dist
+- script: |
+    echo "📂 Vérification du dossier dist"
+    ls -l $(Build.SourcesDirectory)/angular-app-kubernetes/dist/angular-app
+  displayName: 'Verify dist folder content'
+
+# 8️⃣ 📦 Publier l'artefact de build
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)/angular-app-kubernetes/dist/angular-app'
+    artifactName: 'angular-app-artifact'
+    publishLocation: 'Container'
+  displayName: 'Publish Build Artifact'
