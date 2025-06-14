@@ -1,25 +1,38 @@
-FROM node:20-alpine AS build
+# Étape 1 : Utiliser une image de Node.js pour construire l'application
+FROM node:20 AS build
 
+# Fixer l'option OPENSSL_legacy_provider pour résoudre l'erreur OpenSSL
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
+# Définir le répertoire de travail
 WORKDIR /app
 
-#Éviter les erreurs OpenSSL,
-ENV NODE_OPTIONS="--openssl-legacy-provider"
-
-#Copier les fichiers package.json et installer les dépendances,
+# Copier le package.json et package-lock.json pour installer les dépendances
 COPY package.json package-lock.json ./
 
-RUN npm install --legacy-peer-deps
+# Installer les dépendances
+RUN npm install  # Installe les dépendances
 
-#Copier le reste du projet,
+# Copier tout le reste du code source dans le conteneur
 COPY . .
 
-#Vérifier la version Angular CLI,
-#RUN npx ng version (echo "❌ Angular CLI non trouvé !" && exit 1)
-RUN npx ng version || { echo "❌ Angular CLI non trouvé !" && exit 1; }
+# Construire l'application Angular pour la production avec plus de détails
+RUN npm run build -- --configuration=production --verbose
 
-#Lancer le build Angular,
-#RUN npm run build -- --configuration=production --deleteOutputPath=false (echo "❌Build Angular failed!" && exit 1)
-RUN npm run build -- --configuration=production --deleteOutputPath=false || { echo "❌ Build Angular failed!" && exit 1; }
+# Vérification du contenu de /app après le build
+RUN ls -l /app
 
-#Vérifier que le dossier dist existe,
-RUN ls -l /app/dist/angular-app || (echo "❌ Dossier dist/ non trouvé !" && exit 1)
+# Vérification du contenu de /app/dist/angular-app
+RUN ls -l /app/dist/angular-app
+
+# Étape 2 : Utiliser une image de Nginx pour héberger l'application construite
+FROM nginx:alpine
+
+# Copier l'application Angular construite dans le répertoire de Nginx
+COPY --from=build /app/dist/angular-app /usr/share/nginx/html
+
+# Exposer le port 80 pour que Nginx puisse répondre aux requêtes HTTP
+EXPOSE 80
+
+# Démarrer Nginx en mode non-démon
+CMD ["nginx", "-g", "daemon off;"]
