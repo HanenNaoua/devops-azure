@@ -18,7 +18,8 @@ COPY . .
 RUN npx ng version || { echo "❌ Angular CLI non trouvé !" && exit 1; }
 
 #Lancer le build Angular,
-RUN npm run build -- --configuration=production --deleteOutputPath=false (echo "❌Build Angular failed!" && exit 1)
+#RUN npm run build -- --configuration=production --deleteOutputPath=false (echo "❌Build Angular failed!" && exit 1)
+RUN npm run build -- --configuration=production --deleteOutputPath=false || { echo "❌ Build Angular failed!" && exit 1; }
 
 #Vérifier que le dossier dist existe,
 RUN ls -l /app/dist/angular-app || (echo "❌ Dossier dist/ non trouvé !" && exit 1)
