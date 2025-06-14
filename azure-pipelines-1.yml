@@ -65,10 +65,8 @@ steps:
     Dockerfile: 'angular-app-kubernetes/Dockerfile'
   displayName: 'Build and Push Docker Image to Docker Hub'
 
-# 8️⃣ 📦 Publier l'artefact de build
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/angular-app-kubernetes/dist/angular-app'
-    artifactName: 'angular-app-artifact'
-    publishLocation: 'Container'
-  displayName: 'Publish Build Artifact'
+# 1⃣4⃣**🛠 Vérification que l’image Docker a bien été créée**
+- script: |
+    echo " Vérification des images Docker disponibles"
+    docker images | grep "hanen90/devops-azure" || (echo " Image non trouvée, vérifiez Docker Hub !" && exit 1)
+  displayName: "Verify Docker Image"
