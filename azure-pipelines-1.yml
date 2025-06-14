@@ -65,19 +65,6 @@ steps:
     Dockerfile: 'angular-app-kubernetes/Dockerfile'
   displayName: 'Build and Push Docker Image to Docker Hub'
 
-# 7️⃣ Vérification du contenu du dossier dist pour publication
-- script: |
-    echo "📂Vérification du contenu du dossier dist après build"
-    ls -l dist/angular-app # Vérifier le contenu du dossier angular-app après build
-  displayName: 'Verify dist folder content'
-
-
-# 7️⃣ 📂 Vérification du contenu du dossier dist
-#- script: |
- #   echo "📂 Vérification du dossier dist"
-  #  ls -l $(Build.SourcesDirectory)/angular-app-kubernetes/dist/angular-app
-  #displayName: 'Verify dist folder content'
-
 # 8️⃣ 📦 Publier l'artefact de build
 - task: PublishBuildArtifacts@1
   inputs:
