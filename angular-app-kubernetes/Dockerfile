@@ -1,10 +1,14 @@
-FROM node:20-alpine AS build WORKDIR /app
+FROM node:20-alpine AS build
+
+WORKDIR /app
 
 #Éviter les erreurs OpenSSL,
 ENV NODE_OPTIONS="--openssl-legacy-provider"
 
 #Copier les fichiers package.json et installer les dépendances,
-COPY package.json package-lock.json ./ RUN npm install --legacy-peer-deps
+COPY package.json package-lock.json ./
+
+RUN npm install --legacy-peer-deps
 
 #Copier le reste du projet,
 COPY . .
