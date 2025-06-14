@@ -1,23 +1,19 @@
-FROM node:10 AS build
+FROM node:20-alpine AS build WORKDIR /app
 
-WORKDIR /app
+#Éviter les erreurs OpenSSL,
+ENV NODE_OPTIONS="--openssl-legacy-provider"
 
-# Installer Angular CLI version compatible
-RUN npm install -g @angular/cli@6.0.8
+#Copier les fichiers package.json et installer les dépendances,
+COPY package.json package-lock.json ./ RUN npm install --legacy-peer-deps
 
-# Copier les fichiers package
-COPY package*.json ./
-
-# Forcer la bonne version de rxjs et typescript
-RUN npm install rxjs@6.2.2 typescript@2.9.2 --save && npm install
-
-# Copier tout le reste du code
+#Copier le reste du projet,
 COPY . .
 
-# Lancer le build Angular
-RUN ./node_modules/.bin/ng build --configuration=production --verbose
+#Vérifier la version Angular CLI,
+RUN npx ng version (echo "❌ Angular CLI non trouvé !" && exit 1)
 
-# Vérifier le résultat
-RUN ls -l /app/dist
-RUN ls -l /app/dist/angular-app
+#Lancer le build Angular,
+RUN npm run build -- --configuration=production --deleteOutputPath=false (echo "❌Build Angular failed!" && exit 1)
 
+#Vérifier que le dossier dist existe,
+RUN ls -l /app/dist/angular-app || (echo "❌ Dossier dist/ non trouvé !" && exit 1)
