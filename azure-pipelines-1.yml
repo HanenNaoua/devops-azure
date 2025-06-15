@@ -30,18 +30,32 @@ steps:
     echo "📦 Installation de Angular CLI et des dépendances"
     cd $(Build.SourcesDirectory)/angular-app-kubernetes
     npm install -g @angular/cli@16
-    npm install
+    npm install --legacy-peer-deps
     ng version
   displayName: 'Install Angular CLI and dependencies'
 
 # 5️⃣ 🔍 **Préparer l'analyse SonarCloud**
 
-# 5️⃣ 🚀 Build du projet Angular
+# 6️⃣ 🚀 Build du projet Angular
 - script: |
     echo "🚀 Build du projet Angular"
     cd $(Build.SourcesDirectory)/angular-app-kubernetes
     npm run build -- --configuration=production
   displayName: 'Build Angular Project'
+
+# 7️⃣** Vérifier que le dossier dist/ a bien été généré**
+- script: |
+    echo " Vérification du dossier dist après build"
+    ls -l $(Build.SourcesDirectory)/angular-app-kubernetes/dist/angular-app || (echo " 
+    Dossier dist/angular-app non trouvé !" && exit 1)
+  displayName: "Verify Angular Build Output"
+# 8️⃣** Publier l'artefact du build Angular**
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)/angular-app-kubernetes/dist/angular-app'
+    artifactName: 'angular-app-artifact'
+    publishLocation: 'Container'
+  displayName: 'Publish Build Artifact'
 
 # 5️⃣ 🔍 Exécuter l'analyse SonarCloud
 
