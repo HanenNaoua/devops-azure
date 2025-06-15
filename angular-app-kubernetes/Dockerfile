@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Installer les dépendances
-RUN npm install  # Installe les dépendances
+RUN npm install
 
 # Copier tout le reste du code source dans le conteneur
 COPY . .
