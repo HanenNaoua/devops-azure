@@ -40,6 +40,7 @@ steps:
 - script: |
     echo "🚀 Build du projet Angular"
     cd $(Build.SourcesDirectory)/angular-app-kubernetes
+    export NODE_OPTIONS=--openssl-legacy-provider
     npm run build -- --configuration=production
   displayName: 'Build Angular Project'
 
