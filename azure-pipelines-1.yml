@@ -44,6 +44,25 @@ steps:
     npm run build -- --configuration=production
   displayName: 'Build Angular Project'
 
+  # 📌 Étape 10 : Exécuter les tests unitaires
+- script: |
+    echo "🧪 Exécution des tests"
+    cd $(Build.SourcesDirectory)/angular-app-kubernetes
+    npm install --legacy-peer-deps
+    npm run test
+  displayName: 'Exécuter les tests unitaires'
+  workingDirectory: $(System.DefaultWorkingDirectory)
+
+  # 📌 Étape 11 : Publier les résultats des tests
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: 'srctest-results/TEST-results.xml'  # ← ajuste ce chemin si besoin
+    testRunTitle: 'Résultats des tests du frontend'
+    mergeTestResults: true
+    failTaskOnFailedTests: true
+  condition: always()
+  displayName: 'Publier les résultats des tests'
+
 # 7️⃣** Vérifier que le dossier dist/ a bien été généré**
 - script: |
     echo " Vérification du dossier dist après build"
@@ -85,21 +104,3 @@ steps:
     echo " Vérification des images Docker disponibles"
     docker images | grep "hanen90/devops-azure" || (echo " Image non trouvée, vérifiez Docker Hub !" && exit 1)
   displayName: "Verify Docker Image"
-
-  # 📌 Étape 10 : Exécuter les tests unitaires
-- script: |
-    echo "🧪 Exécution des tests"
-    npm install --legacy-peer-deps
-    npm run test
-  displayName: 'Exécuter les tests unitaires'
-  workingDirectory: $(System.DefaultWorkingDirectory)
-
-  # 📌 Étape 11 : Publier les résultats des tests
-- task: PublishTestResults@2
-  inputs:
-    testResultsFiles: 'srctest-results/TEST-results.xml'  # ← ajuste ce chemin si besoin
-    testRunTitle: 'Résultats des tests du frontend'
-    mergeTestResults: true
-    failTaskOnFailedTests: true
-  condition: always()
-  displayName: 'Publier les résultats des tests'
