@@ -46,3 +46,17 @@ stages:
         export NODE_OPTIONS=--openssl-legacy-provider
         npm run build -- --configuration=production
       displayName: 'Build Angular Project'
+    # Test unitaire
+    - script: |
+        cd angular-app-kubernetes
+        export CHROME_BIN=$(node -e "console.log(require('puppeteer').executablePath())")
+        export NODE_OPTIONS=--openssl-legacy-provider
+        npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
+      displayName: "Exécuter les tests unitaires"
+
+    # Publier résultats de test
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFiles: '**/test-results/**/*.xml'
+        testRunTitle: 'Résultats des tests frontend'
+      condition: always()
