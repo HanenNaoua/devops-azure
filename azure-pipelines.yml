@@ -105,7 +105,7 @@ stages:
     # Azure login
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'azureSubscription-Connection'
+        azureSubscription: 'azure'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
