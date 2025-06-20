@@ -112,6 +112,6 @@ stages:
           echo "🔐 Connexion à Azure"
           az aks get-credentials --resource-group MYGR --name myAKSCluster --overwrite-existing
           echo "🚀 Déploiement Kubernetes"
-          kubectl apply -f devops/deployment.yaml
+          kubectl apply -f deploy/deployment.yaml
           #kubectl apply -f angular-app-kubernetes/k8s/service.yaml
       displayName: "Déployer sur AKS"
