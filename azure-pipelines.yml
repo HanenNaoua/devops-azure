@@ -25,6 +25,13 @@ stages:
           exit 1
         fi
       displayName: "Vérifier l'existence de package.json"
+      
+    # Node.js
+    - task: UseNode@1
+      inputs:
+        version: '20.x'
+      displayName: 'Use Node.js 20'
+
     # Installer CLI, puppeteer et dépendances
     - script: |
         cd angular-app-kubernetes
