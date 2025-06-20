@@ -81,12 +81,24 @@ stages:
       displayName: 'Login to Docker Hub'
 
     # Docker build & push
-    - task: Docker@2
-      inputs:
-        command: 'buildAndPush'
-        containerRegistry: 'DockerHub-Connection'
-        repository: 'hanen90/devops-azure'
-        Dockerfile: 'angular-app-kubernetes/Dockerfile'
-        tags: |
-          latest
-      displayName: 'Build and Push Docker Image'
+    #- task: Docker@2
+     # inputs:
+      #  command: 'buildAndPush'
+       # containerRegistry: 'DockerHub-Connection'
+        #repository: 'hanen90/devops-azure'
+        #Dockerfile: 'angular-app-kubernetes/Dockerfile'
+        #tags: |
+         # latest
+      #displayName: 'Build and Push Docker Image'
+# 🚀 STAGE 2: DEPLOY TO AKS
+- stage: Deploy
+  displayName: "Deploy to AKS"
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - job: DeployJob
+    displayName: "Kubernetes Deployment"
+    steps:
+    # Télécharger artefact si besoin
+    - download: current
+      artifact: angular-app-artifact
