@@ -60,3 +60,33 @@ stages:
         testResultsFiles: '**/test-results/**/*.xml'
         testRunTitle: 'Résultats des tests frontend'
       condition: always()
+    # Vérifier build output
+    - script: |
+        ls -l angular-app-kubernetes/dist/angular-app || (echo "❌ Build non généré !" && exit 1)
+      displayName: "Vérifier le dossier dist/"
+
+    # Publier artefact
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'angular-app-kubernetes/dist/angular-app'
+        artifactName: 'angular-app-artifact'
+        publishLocation: 'Container'
+      displayName: 'Publier artefact'
+
+    # Docker login
+    - task: Docker@2
+      inputs:
+        command: 'login'
+        containerRegistry: 'DockerHub-Connection'
+      displayName: 'Login to Docker Hub'
+
+    # Docker build & push
+    - task: Docker@2
+      inputs:
+        command: 'buildAndPush'
+        containerRegistry: 'DockerHub-Connection'
+        repository: 'hanen90/devops-azure'
+        Dockerfile: 'angular-app-kubernetes/Dockerfile'
+        tags: |
+          latest
+      displayName: 'Build and Push Docker Image'
