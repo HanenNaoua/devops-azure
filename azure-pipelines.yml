@@ -25,5 +25,17 @@ stages:
           exit 1
         fi
       displayName: "Vérifier l'existence de package.json"
+    # Installer CLI, puppeteer et dépendances
+    - script: |
+        cd angular-app-kubernetes
+        npm install -g @angular/cli@16
+        npm install --legacy-peer-deps
+        npm install puppeteer karma-junit-reporter --save-dev
+      displayName: "Installer dépendances + Puppeteer"
 
-   
+    # Build Angular
+    - script: |
+        cd angular-app-kubernetes
+        export NODE_OPTIONS=--openssl-legacy-provider
+        npm run build -- --configuration=production
+      displayName: 'Build Angular Project'
