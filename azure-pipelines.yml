@@ -102,3 +102,16 @@ stages:
     # Télécharger artefact si besoin
     - download: current
       artifact: angular-app-artifact
+    # Azure login
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'azureSubscription-Connection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "🔐 Connexion à Azure"
+          az aks get-credentials --resource-group MYGR --name myAKSCluster --overwrite-existing
+          echo "🚀 Déploiement Kubernetes"
+          kubectl apply -f devops/deployment.yaml
+          #kubectl apply -f angular-app-kubernetes/k8s/service.yaml
+      displayName: "Déployer sur AKS"
