@@ -9,7 +9,7 @@ steps:
   displayName: 'Vérifier la version de Terraform'
 
 - script: |
-    cd angular-app-kubernetes/terraform
+    cd angular-app-kubernetes
     ls -la
     terraform init
     terraform plan
