@@ -36,7 +36,6 @@ stages:
         command: 'init'
         backendServiceArm: 'Terraform-cnx'
         backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
-        #backendAzureRmResourceGroupName: 'MC_MYGR_myAKSCluster_southafricanorth'
         backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
         backendAzureRmContainerName: 'tfstate'
         backendAzureRmKey: 'terraform.tfstate'
@@ -93,3 +92,8 @@ stages:
 
         echo "✅ Monitoring stack installed!"
       displayName: "Install Prometheus & Grafana"
+
+    - script: |
+        echo "✅ Vérification des pods dans le namespace monitoring"
+        kubectl get pods -n monitoring
+        displayName: "Check running pods"
