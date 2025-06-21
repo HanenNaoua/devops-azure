@@ -56,21 +56,17 @@ stages:
         provider: 'azurerm'
         command: 'init'
         backendServiceArm: 'Terraform-cnx'
-        backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
-        #backendAzureRmResourceGroupName: 'MC_MYGR_myAKSCluster_southafricanorth'
-        backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
-        backendAzureRmContainerName: 'tfstate'
-        backendAzureRmKey: 'terraform.tfstate'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
-
-   # - task: TerraformTaskV4@4
-    #  displayName: "Terraform Init"
-     # inputs:
-      #  provider: 'azurerm'
-       # command: 'init'
-        #backendServiceArm: 'azure'
         #backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
+        #backendAzureRmResourceGroupName: 'MC_MYGR_myAKSCluster_southafricanorth'
         #backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
         #backendAzureRmContainerName: 'tfstate'
         #backendAzureRmKey: 'terraform.tfstate'
-        #workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
+
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Plan'
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
+        environmentServiceNameAzureRM: 'Terraform-cnx'
