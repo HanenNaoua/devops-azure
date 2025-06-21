@@ -48,6 +48,14 @@ stages:
         #sudo ln -s /usr/local/bin/terraform /usr/bin/terraform
         #terraform --version
       #displayName: 'Install Terraform'
+    
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Plan'
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
+        environmentServiceNameAzureRM: 'Terraform-cnx'
 
 
     - task: TerraformTaskV4@4
@@ -58,15 +66,9 @@ stages:
         backendServiceArm: 'Terraform-cnx'
         #backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
         #backendAzureRmResourceGroupName: 'MC_MYGR_myAKSCluster_southafricanorth'
-        #backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
+        backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
         #backendAzureRmContainerName: 'tfstate'
         #backendAzureRmKey: 'terraform.tfstate'
         workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
 
-    - task: TerraformTaskV4@4
-      displayName: 'Terraform Plan'
-      inputs:
-        provider: 'azurerm'
-        command: 'plan'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
-        environmentServiceNameAzureRM: 'Terraform-cnx'
+ 
