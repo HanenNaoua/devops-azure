@@ -31,14 +31,14 @@ stages:
         ls -l /usr/bin/terraform
         /usr/bin/terraform --version
       displayName: 'Test Terraform executable'
-    - script: |
-        echo "Install Terraform"
-        wget https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
-        unzip terraform_1.5.7_linux_amd64.zip
-        sudo mv terraform /usr/local/bin/
-        sudo ln -s /usr/local/bin/terraform /usr/bin/terraform
-        terraform --version
-      displayName: 'Install Terraform'
+    #- script: |
+     #   echo "Install Terraform"
+      #  wget https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
+       # unzip terraform_1.5.7_linux_amd64.zip
+        #sudo mv terraform /usr/local/bin/
+        #sudo ln -s /usr/local/bin/terraform /usr/bin/terraform
+        #terraform --version
+      #displayName: 'Install Terraform'
 
 
     - task: TerraformTaskV4@4
