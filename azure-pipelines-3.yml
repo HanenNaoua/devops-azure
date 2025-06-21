@@ -3,8 +3,8 @@ trigger:
 
 pool:
   name: Default
- # demands:
-  #  - Agent.Name -equals AgentSelfHostedDevops
+  demands:
+    - Agent.Name -equals AgentSelfHostedDevops
 
 variables:
   resourceGroupName: 'rg-angular-app'
@@ -43,13 +43,6 @@ stages:
         backendAzureRmContainerName: 'tfstate'
         backendAzureRmKey: 'terraform.tfstate'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-
-    - script: terraform --version
-      displayName: "Check Terraform Version"
-    - script: |
-        ls -l /usr/bin/terraform
-        /usr/bin/terraform --version
-      displayName: 'Test Terraform executable'
 
    # - task: TerraformTaskV4@4
     #  displayName: "Terraform Init"
