@@ -32,7 +32,7 @@ stages:
         command: 'init'
         backendServiceArm: 'Azure'
         backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
-        backendAzureRmStorageAccountName: 'csb1003200318d650c5'
+        backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
         backendAzureRmContainerName: 'tfstate'
         backendAzureRmKey: 'terraform.tfstate'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
