@@ -55,7 +55,7 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'init'
-        backendServiceArm: 'azure'
+        backendServiceArm: 'Terraform-cnx'
         backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
         #backendAzureRmResourceGroupName: 'MC_MYGR_myAKSCluster_southafricanorth'
         backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
