@@ -83,12 +83,12 @@ stages:
 
         echo "📦 Installing Prometheus..."
         #helm install prometheus prometheus-community/prometheus
-        helm install prometheus prometheus-community/prometheus --namespace monitoring
+        helm  upgrade --install prometheus prometheus-community/prometheus --namespace monitoring
 
 
         echo "📊 Installing Grafana..."
         #helm upgrade --install grafana grafana/grafana --namespace monitoring
-        helm install grafana grafana/grafana --set adminPassword='Admin123!' --set service.type=LoadBalancer --namespace monitoring
+        helm  upgrade --install grafana grafana/grafana --set adminPassword='Admin123!' --set service.type=LoadBalancer --namespace monitoring
 
         echo "✅ Monitoring stack installed!"
       displayName: "Install Prometheus & Grafana"
