@@ -1,74 +1,14 @@
 trigger:
-  - main
+- main
 
 pool:
-  name: Default
-#  demands:
- #   - Agent.Name -equals AgentSelfHostedDevops
+  name: Default   # ou le nom de ton agent pool personnalisé
 
-variables:
-  resourceGroupName: 'rg-angular-app'
-  aksClusterName: 'aks-cluster'
-  location: 'westeurope'
+steps:
+- script: terraform version
+  displayName: 'Vérifier la version de Terraform'
 
-stages:
-
-# 🌐 STAGE 1 : Terraform - Provisionne le cluster AKS
-- stage: Terraform
-  displayName: "Terraform Deployment Stage"
-  jobs:
-  - job: TerraformJob
-    displayName: "Deploy AKS Cluster with Terraform"
-    steps:
-    - checkout: self
-    - script: |
-        echo "Utilisateur exécutant le pipeline :"
-        whoami
-        echo "Chemin terraform dans le PATH :"
-        which terraform || echo "terraform non trouvé"
-        echo "Version terraform :"
-        terraform version || echo "terraform non exécutable"
-      displayName: 'Debug terraform path and version'
-
-    - script: |
-        echo "Vérification de Terraform installé dans l’agent"
-        terraform --version
-      displayName: 'Check Terraform Installation'
-    - script: terraform --version
-      displayName: "Check Terraform Version"
-    - script: |
-        ls -l /usr/bin/terraform
-        /usr/bin/terraform --version
-      displayName: 'Test Terraform executable'
-    #- script: |
-     #   echo "Install Terraform"
-      #  wget https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
-       # unzip terraform_1.5.7_linux_amd64.zip
-        #sudo mv terraform /usr/local/bin/
-        #sudo ln -s /usr/local/bin/terraform /usr/bin/terraform
-        #terraform --version
-      #displayName: 'Install Terraform'
-    
-    - task: TerraformTaskV4@4
-      displayName: 'Terraform Plan'
-      inputs:
-        provider: 'azurerm'
-        command: 'plan'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
-        environmentServiceNameAzureRM: 'Terraform-cnx'
-
-
-    - task: TerraformTaskV4@4
-      displayName: 'Terraform Init using Managed Identity'
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        backendServiceArm: 'Terraform-cnx'
-        #backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
-        #backendAzureRmResourceGroupName: 'MC_MYGR_myAKSCluster_southafricanorth'
-        backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
-        #backendAzureRmContainerName: 'tfstate'
-        #backendAzureRmKey: 'terraform.tfstate'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
-
- 
+- script: |
+    terraform init
+    terraform plan
+  displayName: 'Terraform Init & Plan'
