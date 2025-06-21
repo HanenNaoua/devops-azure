@@ -24,3 +24,15 @@ stages:
 
     - script: terraform --version
       displayName: "Check Terraform Version"
+    
+    - task: TerraformTaskV4@4
+      displayName: "Terraform Init"
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: 'Azure'
+        backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
+        backendAzureRmStorageAccountName: 'csb1003200318d650c5'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'terraform.tfstate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
