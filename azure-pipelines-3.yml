@@ -21,12 +21,13 @@ stages:
     displayName: "Deploy AKS Cluster with Terraform"
     steps:
     - checkout: self
+    - script: |
+        echo "Vérification de Terraform installé dans l’agent"
+        terraform --version
+      displayName: 'Check Terraform Installation'
 
-    - script: terraform --version
-      displayName: "Check Terraform Version"
-    
     - task: TerraformTaskV4@4
-      displayName: "Terraform Init"
+      displayName: 'Terraform Init using Managed Identity'
       inputs:
         provider: 'azurerm'
         command: 'init'
@@ -36,3 +37,22 @@ stages:
         backendAzureRmContainerName: 'tfstate'
         backendAzureRmKey: 'terraform.tfstate'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+
+    - script: terraform --version
+      displayName: "Check Terraform Version"
+    - script: |
+        ls -l /usr/bin/terraform
+        /usr/bin/terraform --version
+      displayName: 'Test Terraform executable'
+
+   # - task: TerraformTaskV4@4
+    #  displayName: "Terraform Init"
+     # inputs:
+      #  provider: 'azurerm'
+       # command: 'init'
+        #backendServiceArm: 'azure'
+        #backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
+        #backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
+        #backendAzureRmContainerName: 'tfstate'
+        #backendAzureRmKey: 'terraform.tfstate'
+        #workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
