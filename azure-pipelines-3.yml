@@ -60,7 +60,6 @@ stages:
 # 📊 STAGE 2 : Monitoring - Installe Prometheus & Grafana avec Helm
 - stage: Monitoring
   displayName: "Install Prometheus & Grafana"
-  #dependsOn: Terraform
   jobs:
   - job: InstallMonitoring
     displayName: "Install Prometheus and Grafana"
