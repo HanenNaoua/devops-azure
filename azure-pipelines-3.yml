@@ -10,6 +10,7 @@ steps:
 
 - script: |
     cd angular-app-kubernetes/terraform
+    ls -la
     terraform init
     terraform plan
   displayName: 'Terraform Init & Plan'
