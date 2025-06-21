@@ -73,6 +73,11 @@ stages:
         inlineScript: |
           az aks get-credentials --resource-group $(resourceGroupName) --name $(aksClusterName) --overwrite-existing
     - script: |
+        echo "📥 Installation de Helm..."
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        helm version
+      displayName: "Install Helm"
+    - script: |
         echo "➡️ Adding Helm repos..."
         helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
         helm repo add grafana https://grafana.github.io/helm-charts
