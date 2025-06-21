@@ -128,12 +128,8 @@ stages:
           kubectl get svc -o wide
           echo "🌐 Tester l'accessibilité du service"
           EXTERNAL_IP=$(kubectl get svc angular-service --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          sleep 15 
+          curl --fail http://$EXTERNAL_IP || (echo "❌ L'application ne répond pas !" && exit 1)
           echo "Votre application Angular est accessible à : http://$EXTERNAL_IP"
       displayName: "Vérifier le déploiement AKS"
 
-    - script: |
-        EXTERNAL_IP=$(kubectl get svc angular-service --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')
-        echo "IP trouvée : $EXTERNAL_IP"
-        sleep 15 
-        curl --fail http://$EXTERNAL_IP || (echo "❌ L'application ne répond pas !" && exit 1)
-      displayName: "Test HTTP de l'application déployée"
