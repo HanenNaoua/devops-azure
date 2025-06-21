@@ -3,8 +3,8 @@ trigger:
 
 pool:
   name: Default
-  demands:
-    - Agent.Name -equals AgentSelfHostedDevops
+#  demands:
+ #   - Agent.Name -equals AgentSelfHostedDevops
 
 variables:
   resourceGroupName: 'rg-angular-app'
