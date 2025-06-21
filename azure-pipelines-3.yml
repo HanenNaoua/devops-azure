@@ -61,7 +61,7 @@ stages:
         backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
         backendAzureRmContainerName: 'tfstate'
         backendAzureRmKey: 'terraform.tfstate'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
 
    # - task: TerraformTaskV4@4
     #  displayName: "Terraform Init"
