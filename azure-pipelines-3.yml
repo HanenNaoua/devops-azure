@@ -25,6 +25,12 @@ stages:
         echo "Vérification de Terraform installé dans l’agent"
         terraform --version
       displayName: 'Check Terraform Installation'
+    - script: terraform --version
+      displayName: "Check Terraform Version"
+    - script: |
+        ls -l /usr/bin/terraform
+        /usr/bin/terraform --version
+      displayName: 'Test Terraform executable'
 
     - task: TerraformTaskV4@4
       displayName: 'Terraform Init using Managed Identity'
