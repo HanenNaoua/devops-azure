@@ -30,7 +30,7 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'init'
-        backendServiceArm: 'Azure'
+        backendServiceArm: 'azure'
         backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
         backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
         backendAzureRmContainerName: 'tfstate'
