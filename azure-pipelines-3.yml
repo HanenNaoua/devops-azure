@@ -22,6 +22,15 @@ stages:
     steps:
     - checkout: self
     - script: |
+        echo "Utilisateur exécutant le pipeline :"
+        whoami
+        echo "Chemin terraform dans le PATH :"
+        which terraform || echo "terraform non trouvé"
+        echo "Version terraform :"
+        terraform version || echo "terraform non exécutable"
+      displayName: 'Debug terraform path and version'
+
+    - script: |
         echo "Vérification de Terraform installé dans l’agent"
         terraform --version
       displayName: 'Check Terraform Installation'
@@ -47,8 +56,8 @@ stages:
         provider: 'azurerm'
         command: 'init'
         backendServiceArm: 'azure'
-        #backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
-        backendAzureRmResourceGroupName: 'MC_MYGR_myAKSCluster_southafricanorth'
+        backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
+        #backendAzureRmResourceGroupName: 'MC_MYGR_myAKSCluster_southafricanorth'
         backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
         backendAzureRmContainerName: 'tfstate'
         backendAzureRmKey: 'terraform.tfstate'
