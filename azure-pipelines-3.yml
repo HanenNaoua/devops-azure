@@ -3,8 +3,6 @@ trigger:
 
 pool:
   name: Default
-#  demands:
- #   - Agent.Name -equals AgentSelfHostedDevops
 
 variables:
   resourceGroupName: 'rg-angular-app'
@@ -22,15 +20,6 @@ stages:
     steps:
     - checkout: self
     - script: |
-        echo "Utilisateur exécutant le pipeline :"
-        whoami
-        echo "Chemin terraform dans le PATH :"
-        which terraform || echo "terraform non trouvé"
-        echo "Version terraform :"
-        terraform version || echo "terraform non exécutable"
-      displayName: 'Debug terraform path and version'
-
-    - script: |
         echo "Vérification de Terraform installé dans l’agent"
         terraform --version
       displayName: 'Check Terraform Installation'
@@ -40,16 +29,6 @@ stages:
         ls -l /usr/bin/terraform
         /usr/bin/terraform --version
       displayName: 'Test Terraform executable'
-    #- script: |
-     #   echo "Install Terraform"
-      #  wget https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
-       # unzip terraform_1.5.7_linux_amd64.zip
-        #sudo mv terraform /usr/local/bin/
-        #sudo ln -s /usr/local/bin/terraform /usr/bin/terraform
-        #terraform --version
-      #displayName: 'Install Terraform'
-    
-
     - task: TerraformTaskV4@4
       displayName: 'Terraform Init using Managed Identity'
       inputs:
@@ -69,4 +48,11 @@ stages:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
         environmentServiceNameAzureRM: 'Terraform-cnx'
- 
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Apply'
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
+        environmentServiceNameAzureRM: 'Terraform-cnx'
+        additionalArgs: '-auto-approve'
