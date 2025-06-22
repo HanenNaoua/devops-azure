@@ -48,29 +48,29 @@ stages:
       displayName: 'Build Angular Project'
     
     # Préparer l’analyse SonarCloud
-    - task: SonarCloudPrepare@3
-      inputs:
-        SonarCloud: 'SonarCloudServiceConnection'
-        organization: 'hanennaoua'
-        projectKey: 'hanennaoua_azure-devops'
-        projectName: 'azure-devops'
-        scannerMode: 'CLI'
-        extraProperties: |
-          sonar.projectKey=hanennaoua_azure-devops
-          sonar.organization=hanennaoua
-          sonar.host.url=https://sonarcloud.io
-          sonar.sources= .
-      displayName: 'Préparer l’analyse SonarCloud'
+   # - task: SonarCloudPrepare@3
+    #  inputs:
+     #   SonarCloud: 'SonarCloudServiceConnection'
+      #  organization: 'hanennaoua'
+       # projectKey: 'hanennaoua_azure-devops'
+        #projectName: 'azure-devops'
+        #scannerMode: 'CLI'
+        #extraProperties: |
+         # sonar.projectKey=hanennaoua_azure-devops
+          #sonar.organization=hanennaoua
+          #sonar.host.url=https://sonarcloud.io
+          #sonar.sources= .
+      #displayName: 'Préparer l’analyse SonarCloud'
 
     # Exécuter l'analyse SonarCloud
-    - task: SonarCloudAnalyze@3
-      displayName: 'Run SonarCloud Analysis'
+    #- task: SonarCloudAnalyze@3
+     # displayName: 'Run SonarCloud Analysis'
 
     # Publier le rapport SonarCloud
-    - task: SonarCloudPublish@3
-      inputs:
-        pollingTimeoutSec: '300'
-      displayName: 'Publier le rapport SonarCloud'
+    #- task: SonarCloudPublish@3
+     # inputs:
+      #  pollingTimeoutSec: '300'
+      #displayName: 'Publier le rapport SonarCloud'
     
     # Test unitaire
     - script: |
