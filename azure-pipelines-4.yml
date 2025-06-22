@@ -11,7 +11,6 @@ stages:
   displayName: "Build Angular App & Docker Image"
   jobs:
   - job: BuildJob
-    displayName: "Build Angular App & Docker Image"
     steps:
 
     # Checkout code
@@ -129,3 +128,47 @@ stages:
           # Exécuter l'analyse SonarCloud
         - task: SonarCloudAnalyze@3
           displayName: 'Run SonarCloud Analysis'
+
+  # 🌐 STAGE 3: Deploy AKS Cluster with Terraform
+- stage: Terraform
+  displayName: "🌐 Provision AKS with Terraform"
+  jobs:
+    - job: TerraformJob
+      steps:
+        - checkout: self
+        - script: |
+            echo "Vérification de Terraform installé dans l’agent"
+            terraform --version
+          displayName: 'Check Terraform Installation'
+        - script: terraform --version
+          displayName: "Check Terraform Version"
+        - script: |
+            ls -l /usr/bin/terraform
+            /usr/bin/terraform --version
+          displayName: 'Test Terraform executable'
+        - task: TerraformTaskV4@4
+          displayName: 'Terraform Init using Managed Identity'
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'Terraform-cnx'
+            backendAzureRmResourceGroupName: 'cloud-shell-storage-westeurope'
+            backendAzureRmStorageAccountName: 'csb10032004c27f8b63'
+            backendAzureRmContainerName: 'tfstate'
+            backendAzureRmKey: 'terraform.tfstate'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
+        - task: TerraformTaskV4@4
+          displayName: 'Terraform Plan'
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
+            environmentServiceNameAzureRM: 'Terraform-cnx'
+        - task: TerraformTaskV4@4
+          displayName: 'Terraform Apply'
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
+            environmentServiceNameAzureRM: 'Terraform-cnx'
+            additionalArgs: '-auto-approve'
