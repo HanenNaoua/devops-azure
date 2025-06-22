@@ -17,6 +17,7 @@ stages:
     # Checkout code
     - checkout: self
       clean: true
+      fetchDepth: 0
 
     # Vérifier package.json
     - script: |
@@ -83,7 +84,8 @@ stages:
     # Publier résultats de test
     - task: PublishTestResults@2
       inputs:
-        testResultsFiles: '**/test-results/**/*.xml'
+        testResultsFiles: 'srctest-results/TEST-results.xml'
+        #testResultsFiles: '**/test-results/**/*.xml'
         testRunTitle: 'Résultats des tests frontend'
       condition: always()
     # Vérifier build output
