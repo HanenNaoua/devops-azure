@@ -107,15 +107,15 @@ stages:
       displayName: 'Login to Docker Hub'
 
     # Docker build & push
-    - task: Docker@2
-      inputs:
-        command: 'buildAndPush'
-        containerRegistry: 'DockerHub-Connection'
-        repository: 'hanen90/devops-azure'
-        Dockerfile: 'angular-app-kubernetes/Dockerfile'
-        tags: |
-          latest
-      displayName: 'Build and Push Docker Image'
+    #- task: Docker@2
+     # inputs:
+      #  command: 'buildAndPush'
+       # containerRegistry: 'DockerHub-Connection'
+        #repository: 'hanen90/devops-azure'
+        #Dockerfile: 'angular-app-kubernetes/Dockerfile'
+        #tags: |
+         # latest
+      #displayName: 'Build and Push Docker Image'
       
     # Vérification que l’image Docker a bien été créée**
     - script: |
