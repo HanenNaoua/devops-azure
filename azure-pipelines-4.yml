@@ -6,12 +6,12 @@ pool:
 
 stages:
 
-# 🔨 STAGE 1: BUILD + TEST + PUSH IMAGE
+# 🔨 STAGE 1: BUILD  + PUSH IMAGE
 - stage: Build
-  displayName: "Build and Test Stage"
+  displayName: "Build Angular App & Docker Image"
   jobs:
   - job: BuildJob
-    displayName: "Build Angular App, Test, Dockerize"
+    displayName: "Build Angular App & Docker Image"
     steps:
 
     # Checkout code
@@ -84,3 +84,46 @@ stages:
         echo " Vérification des images Docker disponibles"
         docker images | grep "hanen90/devops-azure" || (echo " Image non trouvée, vérifiez Docker Hub !" && exit 1)
       displayName: "Verify Docker Image"
+  
+- stage: Test
+  displayName: "🧪 Run Unit Tests & Quality Checks"
+  dependsOn: Build
+  jobs:
+    - job: TestJob
+      steps:
+        - checkout: self
+
+        - task: UseNode@1
+          inputs:
+            version: '20.x'
+          # Test unitaire
+        - script: |
+            cd angular-app-kubernetes
+            export CHROME_BIN=$(node -e "console.log(require('puppeteer').executablePath())")
+            export NODE_OPTIONS=--openssl-legacy-provider
+            npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
+          displayName: "Run Unit Tests"
+              
+          # Publier résultats de test
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFiles: 'srctest-results/TEST-results.xml'
+            testRunTitle: 'Résultats des tests frontend'
+          condition: always()
+          # Préparer l’analyse SonarCloud
+        - task: SonarCloudPrepare@3
+          inputs:
+            SonarCloud: 'SonarCloudServiceConnection'
+            organization: 'hanennaoua'
+            projectKey: 'hanennaoua_azure-devops'
+            projectName: 'azure-devops'
+            scannerMode: 'CLI'
+            extraProperties: |
+              sonar.projectKey=hanennaoua_azure-devops
+              sonar.organization=hanennaoua
+              sonar.host.url=https://sonarcloud.io
+              sonar.sources= .
+          displayName: 'Préparer l’analyse SonarCloud'
+          # Exécuter l'analyse SonarCloud
+        - task: SonarCloudAnalyze@3
+          displayName: 'Run SonarCloud Analysis'
