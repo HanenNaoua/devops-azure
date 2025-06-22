@@ -66,12 +66,6 @@ stages:
     # Exécuter l'analyse SonarCloud
     - task: SonarCloudAnalyze@3
       displayName: 'Run SonarCloud Analysis'
-
-     #Publier le rapport SonarCloud
-    - task: SonarCloudPublish@3
-      inputs:
-        pollingTimeoutSec: '300'
-      displayName: 'Publier le rapport SonarCloud'
     
     # Test unitaire
     - script: |
