@@ -217,3 +217,46 @@ stages:
             echo "✅ Vérification des pods dans le namespace monitoring"
             kubectl get pods -n monitoring
           displayName: "Check running pods"
+
+# 🚀 STAGE 5: DEPLOY
+- stage: Deploy
+  displayName: "🚀 Deploy App to AKS"
+  dependsOn:
+    - Test
+    - Terraform
+  condition: succeeded()
+  jobs:
+    - job: DeployJob
+      steps:
+        # Télécharger artefact si besoin
+        - download: current
+          artifact: angular-app-artifact
+        # Azure login
+        - task: AzureCLI@2
+          inputs:
+            azureSubscription: 'azure'
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              echo "🔐 Connexion à Azure"
+              az aks get-credentials --resource-group MYGR --name myAKSCluster --overwrite-existing
+              echo "🚀 Déploiement Kubernetes"
+              kubectl apply -f deploy/deployment.yaml
+          displayName: "Déployer sur AKS"
+        - task: AzureCLI@2
+          inputs:
+            azureSubscription: 'azure'
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              az aks get-credentials --resource-group MYGR --name myAKSCluster --overwrite-existing
+              echo "🔍 Vérification des pods"
+              kubectl get pods -o wide
+              echo "🔍 Vérification des services"
+              kubectl get svc -o wide
+              echo "🌐 Tester l'accessibilité du service"
+              EXTERNAL_IP=$(kubectl get svc projetdevops-service --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+              sleep 15 
+              curl --fail http://$EXTERNAL_IP || (echo "❌ L'application ne répond pas !" && exit 1)
+              echo "Votre application Angular est accessible à : http://$EXTERNAL_IP"
+          displayName: "Vérifier le déploiement AKS"
