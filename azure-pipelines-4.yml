@@ -99,6 +99,8 @@ stages:
           # Test unitaire
         - script: |
             cd angular-app-kubernetes
+            npm install --legacy-peer-deps
+            npm install puppeteer karma-junit-reporter --save-dev
             export CHROME_BIN=$(node -e "console.log(require('puppeteer').executablePath())")
             export NODE_OPTIONS=--openssl-legacy-provider
             npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
