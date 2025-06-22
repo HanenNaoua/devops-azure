@@ -3,6 +3,11 @@ trigger:
 
 pool:
   name: default
+  
+variables:
+  resourceGroupName: 'rg-angular-app'
+  aksClusterName: 'aks-cluster'
+  location: 'westeurope'
 
 stages:
 
@@ -172,3 +177,43 @@ stages:
             workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
             environmentServiceNameAzureRM: 'Terraform-cnx'
             additionalArgs: '-auto-approve'
+  
+  # 📊 STAGE 4: MONITORING
+- stage: Monitoring
+  displayName: "📊 Install Prometheus & Grafana"
+  dependsOn: Terraform
+  jobs:
+    - job: MonitoringJob
+      steps:
+        - checkout: self
+        - task: AzureCLI@2
+          displayName: "Get AKS Credentials"
+          inputs:
+            azureSubscription: 'Terraform-cnx'
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              az aks get-credentials --resource-group $(resourceGroupName) --name $(aksClusterName) --overwrite-existing
+        - script: |
+            echo "🎯 Vérification Helm local"
+            helm version
+          displayName: "Check Helm version"
+
+        - script: |
+            echo "➡️ Adding Helm repos..."
+            helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+            helm repo add grafana https://grafana.github.io/helm-charts
+            helm repo update
+            echo "Création du namespace monitoring..."
+            kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+            echo "📦 Installing Prometheus..."
+            helm install prometheus prometheus-community/prometheus --namespace monitoring
+            echo "📊 Installing Grafana..."
+            helm install grafana grafana/grafana --set adminPassword='Admin123!' --set service.type=LoadBalancer --namespace monitoring
+            echo "✅ Monitoring stack installed!"
+          displayName: "Install Prometheus & Grafana"
+
+        - script: |
+            echo "✅ Vérification des pods dans le namespace monitoring"
+            kubectl get pods -n monitoring
+          displayName: "Check running pods"
