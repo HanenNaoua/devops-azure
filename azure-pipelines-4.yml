@@ -6,7 +6,7 @@ pool:
   
 variables:
   resourceGroupName: 'rg-angular-app'
-  aksClusterName: 'aks-cluster2'
+  aksClusterName: 'aks-cluster'
   location: 'westeurope'
 
 stages:
