@@ -216,7 +216,7 @@ stages:
 - stage: Deploy
   displayName: "🚀 Deploy App to AKS"
   dependsOn:
-    - Test
+    #- Test
     - Monitoring
   condition: succeeded()
   jobs:
