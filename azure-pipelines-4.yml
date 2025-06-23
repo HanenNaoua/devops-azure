@@ -168,6 +168,8 @@ stages:
             workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
             environmentServiceNameAzureRM: 'Terraform-cnx'
             additionalArgs: '-auto-approve'
+            commandOptions: '-lock=false'
+
   
   # 📊 STAGE 4: MONITORING
 - stage: Monitoring
