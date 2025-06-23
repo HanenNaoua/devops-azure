@@ -158,6 +158,8 @@ stages:
             command: 'plan'
             workingDirectory: '$(System.DefaultWorkingDirectory)/angular-app-kubernetes/terraform'
             environmentServiceNameAzureRM: 'Terraform-cnx'
+            commandOptions: '-lock=false'
+
         - task: TerraformTaskV4@4
           displayName: 'Terraform Apply'
           inputs:
