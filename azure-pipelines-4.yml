@@ -6,7 +6,7 @@ pool:
   
 variables:
   resourceGroupName: 'rg-angular-app'
-  aksClusterName: 'aks-cluster'
+  aksClusterName: 'aks-cluster2'
   location: 'westeurope'
 
 stages:
@@ -17,12 +17,10 @@ stages:
   jobs:
   - job: BuildJob
     steps:
-
     # Checkout code
     - checkout: self
       clean: true
       fetchDepth: 0
-      
     # Vérifier package.json
     - script: |
         if [ ! -f "$(Build.SourcesDirectory)/angular-app-kubernetes/package.json" ]; then
@@ -30,13 +28,11 @@ stages:
           exit 1
         fi
       displayName: "Vérifier l'existence de package.json"
-      
     # Node.js
     - task: UseNode@1
       inputs:
         version: '20.x'
       displayName: 'Use Node.js 20'
-
     # Installer CLI, puppeteer et dépendances
     - script: |
         cd angular-app-kubernetes
@@ -44,7 +40,6 @@ stages:
         npm install --legacy-peer-deps
         npm install puppeteer karma-junit-reporter --save-dev
       displayName: "Installer dépendances + Puppeteer"
-
     # Build Angular
     - script: |
         cd angular-app-kubernetes
@@ -56,7 +51,6 @@ stages:
     - script: |
         ls -l angular-app-kubernetes/dist/angular-app || (echo "❌ Build non généré !" && exit 1)
       displayName: "Vérifier le dossier dist/"
-
     # Publier artefact
     - task: PublishBuildArtifacts@1
       inputs:
@@ -64,25 +58,22 @@ stages:
         artifactName: 'angular-app-artifact'
         publishLocation: 'Container'
       displayName: 'Publier artefact'
-
     # Docker login
     - task: Docker@2
       inputs:
         command: 'login'
         containerRegistry: 'DockerHub-Connection'
       displayName: 'Login to Docker Hub'
-
     # Docker build & push
-    #- task: Docker@2
-     # inputs:
-      #  command: 'buildAndPush'
-       # containerRegistry: 'DockerHub-Connection'
-        #repository: 'hanen90/devops-azure'
-        #Dockerfile: 'angular-app-kubernetes/Dockerfile'
-        #tags: |
-         # latest
-      #displayName: 'Build and Push Docker Image'
-      
+    - task: Docker@2
+      inputs:
+        command: 'buildAndPush'
+        containerRegistry: 'DockerHub-Connection'
+        repository: 'hanen90/devops-azure'
+        Dockerfile: 'angular-app-kubernetes/Dockerfile'
+        tags: |
+          latest
+      displayName: 'Build and Push Docker Image'      
     # Vérification que l’image Docker a bien été créée**
     - script: |
         echo " Vérification des images Docker disponibles"
@@ -96,7 +87,6 @@ stages:
     - job: TestJob
       steps:
         - checkout: self
-
         - task: UseNode@1
           inputs:
             version: '20.x'
@@ -108,8 +98,7 @@ stages:
             export CHROME_BIN=$(node -e "console.log(require('puppeteer').executablePath())")
             export NODE_OPTIONS=--openssl-legacy-provider
             npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
-          displayName: "Run Unit Tests"
-              
+          displayName: "Run Unit Tests"              
           # Publier résultats de test
         - task: PublishTestResults@2
           inputs:
@@ -239,7 +228,7 @@ stages:
             scriptLocation: 'inlineScript'
             inlineScript: |
               echo "🔐 Connexion à Azure"
-              az aks get-credentials --resource-group MYGR --name myAKSCluster --overwrite-existing
+              az aks get-credentials --resource-group $(resourceGroupName) --name $(aksClusterName) --overwrite-existing
               echo "🚀 Déploiement Kubernetes"
               kubectl apply -f deploy/deployment.yaml
           displayName: "Déployer sur AKS"
@@ -249,7 +238,7 @@ stages:
             scriptType: 'bash'
             scriptLocation: 'inlineScript'
             inlineScript: |
-              az aks get-credentials --resource-group MYGR --name myAKSCluster --overwrite-existing
+              az aks get-credentials --resource-group $(resourceGroupName) --name $(aksClusterName) --overwrite-existing
               echo "🔍 Vérification des pods"
               kubectl get pods -o wide
               echo "🔍 Vérification des services"
