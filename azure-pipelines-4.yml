@@ -223,7 +223,7 @@ stages:
   displayName: "🚀 Deploy App to AKS"
   dependsOn:
     - Test
-    - Terraform
+    - Monitoring
   condition: succeeded()
   jobs:
     - job: DeployJob
