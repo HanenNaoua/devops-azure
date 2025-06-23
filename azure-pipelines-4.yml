@@ -126,6 +126,7 @@ stages:
   # 🌐 STAGE 3: Deploy AKS Cluster with Terraform
 - stage: Terraform
   displayName: "🌐 Provision AKS with Terraform"
+  dependsOn: Build
   jobs:
     - job: TerraformJob
       steps:
