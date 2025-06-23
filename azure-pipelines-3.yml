@@ -22,6 +22,7 @@ stages:
     - script: |
         echo "Vérification de Terraform installé dans l’agent"
         terraform --version
+        terraform force-unlock eyJJRCI6IjJmYmMwYmJmLWJmMzAtMzExMC04NDE3LTY3ZDk2YTYxZjVmOCIsIk9wZXJhdGlvbiI6Ik9wZXJhdGlvblR5cGVBcHBseSIsIkluZm8iOiIiLCJXaG8iOiJoYW5lbkBoYW5lbi12aXJ0dWFsLW1hY2hpbmUiLCJWZXJzaW9uIjoiMS41LjciLCJDcmVhdGVkIjoiMjAyNS0wNi0yM1QwNzo0MTozMC4wMjEyNDU4NTFaIiwiUGF0aCI6InRmc3RhdGUvdGVycmFmb3JtLnRmc3RhdGUifQ==
       displayName: 'Check Terraform Installation'
     - script: terraform --version
       displayName: "Check Terraform Version"
